@@ -5,7 +5,6 @@ import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/utils/responsive_helper.dart';
 import 'package:mimo/widgets/custom_button.dart';
 import 'package:mimo/widgets/custom_textfield.dart';
-import 'package:mimo/utils/validators.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
   const ForgotPasswordScreen({super.key});
@@ -20,16 +19,10 @@ class ForgotPasswordScreen extends StatelessWidget {
     void _resetPassword() async {
       String email = _emailController.text.trim();
 
-      String? emailError = Validators.validateEmail(email);
-      
-      if (emailError != null) {
-        Get.snackbar('Error', emailError, snackPosition: SnackPosition.BOTTOM);
-        return;
-      }
-
       await authController.resetPassword(email);
 
-      Get.snackbar('Success', 'A password reset link has been sent to your email.',
+      Get.snackbar(
+          'Success', 'A password reset link has been sent to your email.',
           snackPosition: SnackPosition.BOTTOM);
     }
 
@@ -54,19 +47,26 @@ class ForgotPasswordScreen extends StatelessWidget {
                           },
                           child: Icon(
                             Icons.arrow_back,
-                            color: themeController.isDarkMode.value?Colors.white:Colors.black,
+                            color: themeController.isDarkMode.value
+                                ? Colors.white
+                                : Colors.black,
                             size: 25,
                           )),
-                      SizedBox(width: ResponsiveHelper.screenWidth(context) * 0.16),
+                      SizedBox(
+                          width: ResponsiveHelper.screenWidth(context) * 0.16),
                       Text(
                         'Forgot Password',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveHelper.screenHeight(context) * 0.040),
-                  CustomTextField(controller: _emailController, hintText: 'Email'),
-                  SizedBox(height: ResponsiveHelper.screenHeight(context) * 0.014),
+                  SizedBox(
+                      height: ResponsiveHelper.screenHeight(context) * 0.040),
+                  CustomTextField(
+                      controller: _emailController, hintText: 'Email'),
+                  SizedBox(
+                      height: ResponsiveHelper.screenHeight(context) * 0.014),
                   Row(
                     children: [
                       Expanded(
@@ -77,20 +77,22 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveHelper.screenHeight(context) * 0.040),
+                  SizedBox(
+                      height: ResponsiveHelper.screenHeight(context) * 0.040),
                   Obx(() {
                     return authController.isLoading.value
                         ? CircularProgressIndicator()
                         : GestureDetector(
-                          onTap: (){
-                            _resetPassword();
-                          },
-                          child: CustomButton(
+                            onTap: () {
+                              _resetPassword();
+                            },
+                            child: CustomButton(
                               title: 'CONTINUE',
                             ),
-                        );
+                          );
                   }),
-                  SizedBox(height: ResponsiveHelper.screenHeight(context) * 0.030),
+                  SizedBox(
+                      height: ResponsiveHelper.screenHeight(context) * 0.030),
                   Row(
                     spacing: ResponsiveHelper.screenWidth(context) * 0.010,
                     mainAxisAlignment: MainAxisAlignment.center,

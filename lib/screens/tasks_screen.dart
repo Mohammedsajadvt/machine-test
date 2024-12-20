@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/controllers/todo_controller.dart';
 import 'package:mimo/models/categories_model.dart';
-import 'package:intl/intl.dart';
 import 'package:mimo/models/tasks_model.dart';
 
 class AddTasksScreen extends StatelessWidget {
   final CategoriesModel category;
   final TodoController todoController = Get.put(TodoController());
+  final ThemeController themeController = Get.find();
 
   AddTasksScreen({super.key, required this.category});
 
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
-  final ThemeController themeController = Get.find();
 
   List<TaskModel> _filterTasks(String query) {
     return category.tasks.where((task) {
@@ -54,7 +54,7 @@ class AddTasksScreen extends StatelessWidget {
                   border: InputBorder.none,
                 ),
                 onChanged: (text) {
-                  (context as Element).markNeedsBuild();
+                  todoController.updateSearchQuery(text);
                 },
               )
             : Text(category.name),
@@ -64,6 +64,7 @@ class AddTasksScreen extends StatelessWidget {
             onPressed: () {
               if (_isSearching) {
                 _searchController.clear();
+                todoController.updateSearchQuery('');
                 _isSearching = false;
               } else {
                 _isSearching = true;
@@ -77,30 +78,33 @@ class AddTasksScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(50),
         ),
-        backgroundColor: themeController.isDarkMode.value?Colors.white:Colors.black,
+        backgroundColor: themeController.isDarkMode.value ? Colors.white : Colors.black,
         onPressed: () {
           _showAddTaskDialog(context);
         },
-        child:  Icon(Icons.add,color: themeController.isDarkMode.value?Colors.blueAccent:Colors.black),
+        child: Icon(Icons.add, color: themeController.isDarkMode.value ? Colors.blueAccent : Colors.white),
       ),
-      body: GetBuilder<TodoController>(
-        builder: (controller) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (_getTasksForDate(DateTime.now()).isNotEmpty)
-                _buildTaskSection("Today", _getTasksForDate(DateTime.now())),
-              if (_getTasksForDate(DateTime.now().add(const Duration(days: 1)))
-                  .isNotEmpty)
-                _buildTaskSection(
-                    "Tomorrow",
-                    _getTasksForDate(
-                        DateTime.now().add(const Duration(days: 1)))),
-              if (_getRemainingTasks().isNotEmpty)
-                _buildTaskSection("Upcoming", _getRemainingTasks()),
-            ],
-          );
-        },
+      body: RefreshIndicator(
+        onRefresh: _refreshTasks,
+        child: GetBuilder<TodoController>(
+          builder: (_) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (_getTasksForDate(DateTime.now()).isNotEmpty)
+                  _buildTaskSection("Today", _getTasksForDate(DateTime.now())),
+                if (_getTasksForDate(DateTime.now().add(const Duration(days: 1)))
+                    .isNotEmpty)
+                  _buildTaskSection(
+                      "Tomorrow",
+                      _getTasksForDate(
+                          DateTime.now().add(const Duration(days: 1)))),
+                if (_getRemainingTasks().isNotEmpty)
+                  _buildTaskSection("Upcoming", _getRemainingTasks()),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -130,6 +134,11 @@ class AddTasksScreen extends StatelessWidget {
         const SizedBox(height: 16),
       ],
     );
+  }
+
+  Future<void> _refreshTasks() async {
+    await Future.delayed(const Duration(seconds: 2)); 
+    todoController.fetchCategories();  
   }
 
   void _showAddTaskDialog(BuildContext context) {
@@ -178,16 +187,22 @@ class AddTasksScreen extends StatelessWidget {
           actions: [
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child:  Text("Cancel",style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black),),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: themeController.isDarkMode.value ? Colors.white : Colors.black),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
-                if (titleController.text.isNotEmpty) {
-                  todoController.setTasks([...todoController.tasks]);
+                if (titleController.text.isNotEmpty && selectedDate != null) {
+                  todoController.addTask(category.id, titleController.text, selectedDate!);
                   Navigator.pop(context);
                 }
               },
-              child:  Text("Add",style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black),)
+              child: Text(
+                "Add",
+                style: TextStyle(color: themeController.isDarkMode.value ? Colors.white : Colors.black),
+              ),
             ),
           ],
         );

@@ -14,7 +14,7 @@ class TaskModel {
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'dueDate': Timestamp.fromDate(dueDate),
+      'dueDate': dueDate,
       'isCompleted': isCompleted,
     };
   }

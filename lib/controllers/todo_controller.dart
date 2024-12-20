@@ -7,18 +7,18 @@ class TodoController extends GetxController {
   final categories = <CategoriesModel>[].obs;
   var tasks = <TaskModel>[].obs;
 
+  RxString searchQuery = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchCategories();
   }
- 
-
-   RxString searchQuery = ''.obs; 
 
   void updateSearchQuery(String query) {
     searchQuery.value = query;
   }
+
   void fetchCategories() {
     FirebaseFirestore.instance
         .collection('categories')
@@ -29,8 +29,6 @@ class TodoController extends GetxController {
           .toList();
     });
   }
-
-  
 
   void addCategories(String name, String emoji, String task) {
     FirebaseFirestore.instance.collection('categories').add({
@@ -43,15 +41,18 @@ class TodoController extends GetxController {
   }
 
   void addTask(String categoryId, String title, DateTime dueDate) {
+    final newTask = TaskModel(title: title, dueDate: dueDate);
+
+    // Update Firestore
     FirebaseFirestore.instance.collection('categories').doc(categoryId).update({
-      'tasks': FieldValue.arrayUnion(
-          [TaskModel(title: title, dueDate: dueDate).toMap()]),
+      'tasks': FieldValue.arrayUnion([newTask.toMap()]),
     }).then((_) {
-      fetchCategories();
+      // Update local task list in the controller
+      tasks.add(newTask);
     });
   }
 
-   void setTasks(List<TaskModel> newTasks) {
+  void setTasks(List<TaskModel> newTasks) {
     tasks.value = newTasks;
   }
 
@@ -59,6 +60,4 @@ class TodoController extends GetxController {
     task.isCompleted = !task.isCompleted;
     update();
   }
-
-
-  }
+}

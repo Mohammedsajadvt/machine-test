@@ -5,7 +5,6 @@ import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/utils/responsive_helper.dart';
 import 'package:mimo/widgets/custom_button.dart';
 import 'package:mimo/widgets/custom_textfield.dart';
-import 'package:mimo/utils/validators.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -22,14 +21,8 @@ class LoginScreen extends StatelessWidget {
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
-      String? emailError = Validators.validateEmail(email);
-      String? passwordError = Validators.validatePassword(password);
 
-      if (emailError != null || passwordError != null) {
-        Get.snackbar('Error', emailError ?? passwordError!,
-            snackPosition: SnackPosition.BOTTOM);
-        return;
-      }
+    
 
       await authController.login(email, password);
 

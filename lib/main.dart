@@ -8,11 +8,11 @@ import 'package:mimo/controllers/todo_controller.dart';
 import 'package:mimo/firebase_options.dart';
 import 'package:mimo/routes/app_routes.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
-);
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   Get.put(ThemeController());
   Get.put(TodoController());
   Get.put(AuthController());
@@ -29,10 +29,10 @@ class MyApp extends StatelessWidget {
       () => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Firebase GetX  Todo App',
-        theme: themeController.isDarkMode.value?darkTheme:lightTheme,
+        theme: themeController.isDarkMode.value ? darkTheme : lightTheme,
         darkTheme: darkTheme,
         themeMode: themeController.theme,
-        initialRoute: AppRoutes.categories,
+        initialRoute: AppRoutes.login,
         onGenerateRoute: AppRoutes.generateRoute,
       ),
     );
