@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/models/menu_model.dart';
 import 'package:mimo/utils/responsive_helper.dart';
 
@@ -7,11 +10,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController =  Get.find();
     final menu = [
-      MenuModel(icon: Icon(Icons.notifications), title: 'Notifications'),
-      MenuModel(icon: Icon(Icons.settings), title: 'General'),
-      MenuModel(icon: Icon(Icons.person), title: 'Account'),
-      MenuModel(icon: Icon(Icons.info), title: 'About'),
+      MenuModel(icon: Icon(Icons.notifications,color: themeController.isDarkMode.value?Colors.white:Colors.black,), title: 'Notifications'),
+      MenuModel(icon: Icon(Icons.settings,color: themeController.isDarkMode.value?Colors.white:Colors.black), title: 'General'),
+      MenuModel(icon: Icon(Icons.person,color: themeController.isDarkMode.value?Colors.white:Colors.black), title: 'Account'),
+      MenuModel(icon: Icon(Icons.info,color: themeController.isDarkMode.value?Colors.white:Colors.black), title: 'About'),
     ];
     return Scaffold(
       appBar: AppBar(
@@ -62,7 +66,7 @@ class SettingsScreen extends StatelessWidget {
                   final data = menu[index];
                   return ListTile(
                     leading: data.icon,
-                    title: Text(data.title,style: TextStyle(fontWeight: FontWeight.bold),),
+                    title: Text(data.title,style: TextStyle(fontWeight: FontWeight.bold,color: themeController.isDarkMode.value?Colors.white:Colors.black),),
                   );
                 },
               ),

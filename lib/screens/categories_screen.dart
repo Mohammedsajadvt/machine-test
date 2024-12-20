@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/screens/tasks_screen.dart';
 import 'package:mimo/widgets/add_categories_card.dart';
 import 'package:mimo/widgets/categories_card.dart';
@@ -8,6 +9,7 @@ import '../utils/responsive_helper.dart';
 
 class CategoriesScreen extends StatelessWidget {
   final TodoController controller = Get.put(TodoController());
+  final ThemeController themeController = Get.put(ThemeController());
   final TextEditingController _searchController = TextEditingController();
   var _isSearching = false.obs;
 
@@ -67,7 +69,6 @@ class CategoriesScreen extends StatelessWidget {
         child: Column(
           children: [
             Card(
-              color: const Color(0xffF9F9F9),
               child: const ListTile(
                 title: Text('"The memories is a shield and life helper."'),
                 leading: CircleAvatar(
@@ -76,7 +77,7 @@ class CategoriesScreen extends StatelessWidget {
                 ),
                 subtitle: Text(
                   'Tamim al-Barghouti',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(),
                 ),
               ),
             ),

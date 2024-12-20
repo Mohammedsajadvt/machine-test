@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/controllers/todo_controller.dart';
 import 'package:mimo/utils/responsive_helper.dart';
 
@@ -10,6 +11,7 @@ class AddCategoriesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find();
     final TextEditingController nameController = TextEditingController();
     final TextEditingController emojiController = TextEditingController();
     final TextEditingController taskController = TextEditingController();
@@ -83,13 +85,12 @@ class AddCategoriesCard extends StatelessWidget {
         );
       },
       child: Card(
-        color: const Color(0xffF9F9F9),
-        child: const Center(
+        child:  Center(
           child: CircleAvatar(
             radius: 20,
-            backgroundColor: Colors.black,
+            backgroundColor: themeController.isDarkMode.value?Colors.white:Colors.black,
             child: Center(
-              child: Icon(Icons.add, size: 30, color: Colors.white),
+              child: Icon(Icons.add, size: 30,color: themeController.isDarkMode.value?Colors.blueAccent:Colors.white),
             ),
           ),
         ),

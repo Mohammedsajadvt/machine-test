@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mimo/controllers/theme_controller.dart';
 import 'package:mimo/controllers/todo_controller.dart';
 import 'package:mimo/models/categories_model.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +14,7 @@ class AddTasksScreen extends StatelessWidget {
 
   final TextEditingController _searchController = TextEditingController();
   bool _isSearching = false;
+  final ThemeController themeController = Get.find();
 
   List<TaskModel> _filterTasks(String query) {
     return category.tasks.where((task) {
@@ -73,13 +75,13 @@ class AddTasksScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(50),
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: themeController.isDarkMode.value?Colors.white:Colors.black,
         onPressed: () {
           _showAddTaskDialog(context);
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child:  Icon(Icons.add,color: themeController.isDarkMode.value?Colors.blueAccent:Colors.black),
       ),
       body: GetBuilder<TodoController>(
         builder: (controller) {

@@ -17,7 +17,7 @@ class CategoriesCard extends StatelessWidget {
           const SizedBox(height: 8.0),
           Text(categories.name, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8.0),
-            Text('${categories.tasks.length} Tasks', style: const TextStyle(color: Colors.grey)),
+            Text('${categories.tasks.length} Tasks'),
           
         ],
       ),

@@ -9,7 +9,7 @@ import 'package:mimo/screens/tasks_screen.dart';
 
 class AppRoutes {
   static const String login = '/';
-  static const String signup = '/signup';
+  static const String signup = '/register';
   static const String forgotPassword = '/forgotpassword';
   static const String setting = "/settings";
   static const String categories = "/categories";
