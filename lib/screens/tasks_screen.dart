@@ -1,24 +1,75 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mimo/controllers/todo_controller.dart';
 import 'package:mimo/models/categories_model.dart';
 import 'package:intl/intl.dart';
-import 'package:mimo/models/tasks_model.dart'; 
-
+import 'package:mimo/models/tasks_model.dart';
 
 class AddTasksScreen extends StatelessWidget {
   final CategoriesModel category;
-  final TodoController controller = Get.find();
+  final TodoController todoController = Get.put(TodoController());
 
   AddTasksScreen({super.key, required this.category});
 
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearching = false;
+
+  List<TaskModel> _filterTasks(String query) {
+    return category.tasks.where((task) {
+      return task.title.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+  }
+
+  List<TaskModel> _getTasksForDate(DateTime date) {
+    return _filterTasks(_searchController.text).where((task) {
+      return task.dueDate.year == date.year &&
+          task.dueDate.month == date.month &&
+          task.dueDate.day == date.day;
+    }).toList();
+  }
+
+  List<TaskModel> _getRemainingTasks() {
+    final now = DateTime.now();
+    final tomorrow = now.add(const Duration(days: 1));
+    return _filterTasks(_searchController.text).where((task) {
+      return task.dueDate.isAfter(tomorrow);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    todoController.setTasks(category.tasks);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(category.name),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search tasks...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (text) {
+                  (context as Element).markNeedsBuild();
+                },
+              )
+            : Text(category.name),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.cancel : Icons.search),
+            onPressed: () {
+              if (_isSearching) {
+                _searchController.clear();
+                _isSearching = false;
+              } else {
+                _isSearching = true;
+              }
+              (context as Element).markNeedsBuild();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(
@@ -30,36 +81,26 @@ class AddTasksScreen extends StatelessWidget {
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (_getTasksForDate(DateTime.now()).isNotEmpty)
-            _buildTaskSection("Today", _getTasksForDate(DateTime.now())),
-          if (_getTasksForDate(DateTime.now().add(const Duration(days: 1)))
-              .isNotEmpty)
-            _buildTaskSection("Tomorrow",
-                _getTasksForDate(DateTime.now().add(const Duration(days: 1)))),
-          if (_getRemainingTasks().isNotEmpty)
-            _buildTaskSection("Upcoming", _getRemainingTasks()),
-        ],
+      body: GetBuilder<TodoController>(
+        builder: (controller) {
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (_getTasksForDate(DateTime.now()).isNotEmpty)
+                _buildTaskSection("Today", _getTasksForDate(DateTime.now())),
+              if (_getTasksForDate(DateTime.now().add(const Duration(days: 1)))
+                  .isNotEmpty)
+                _buildTaskSection(
+                    "Tomorrow",
+                    _getTasksForDate(
+                        DateTime.now().add(const Duration(days: 1)))),
+              if (_getRemainingTasks().isNotEmpty)
+                _buildTaskSection("Upcoming", _getRemainingTasks()),
+            ],
+          );
+        },
       ),
     );
-  }
-
-  List<TaskModel> _getTasksForDate(DateTime date) {
-    return category.tasks.where((task) {
-      return task.dueDate.year == date.year &&
-          task.dueDate.month == date.month &&
-          task.dueDate.day == date.day;
-    }).toList();
-  }
-
-  List<TaskModel> _getRemainingTasks() {
-    final now = DateTime.now();
-    final tomorrow = now.add(const Duration(days: 1));
-    return category.tasks.where((task) {
-      return task.dueDate.isAfter(tomorrow);
-    }).toList();
   }
 
   Widget _buildTaskSection(String title, List<TaskModel> tasks) {
@@ -81,29 +122,12 @@ class AddTasksScreen extends StatelessWidget {
                 "Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate)}",
               ),
               onTap: () {
-                _toggleTaskCompletion(task);
+                todoController.toggleTaskCompletion(task, category.id);
               },
             )),
         const SizedBox(height: 16),
       ],
     );
-  }
-
-  void _toggleTaskCompletion(TaskModel task) {
-    task.isCompleted = !task.isCompleted;
-
-    FirebaseFirestore.instance
-        .collection('categories')
-        .doc(category.id)
-        .update({
-      'tasks': FieldValue.arrayRemove([task.toMap()]),
-    }).then((_) {
-      FirebaseFirestore.instance.collection('categories').doc(category.id).update({
-        'tasks': FieldValue.arrayUnion([task.toMap()]), 
-      });
-    });
-
-    controller.fetchCategories();
   }
 
   void _showAddTaskDialog(BuildContext context) {
@@ -157,11 +181,7 @@ class AddTasksScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
-                  controller.addTask(
-                    category.id,
-                    titleController.text,
-                    selectedDate ?? DateTime.now(),
-                  );
+                  todoController.setTasks([...todoController.tasks]);
                   Navigator.pop(context);
                 }
               },

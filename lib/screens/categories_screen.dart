@@ -8,6 +8,8 @@ import '../utils/responsive_helper.dart';
 
 class CategoriesScreen extends StatelessWidget {
   final TodoController controller = Get.put(TodoController());
+  final TextEditingController _searchController = TextEditingController();
+  var _isSearching = false.obs;
 
   CategoriesScreen({super.key});
 
@@ -21,7 +23,7 @@ class CategoriesScreen extends StatelessWidget {
             left: ResponsiveHelper.screenHeight(context) * 0.012,
           ),
           child: GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.of(context).pushNamed('/settings');
             },
             child: const CircleAvatar(
@@ -30,9 +32,30 @@ class CategoriesScreen extends StatelessWidget {
             ),
           ),
         ),
-        title: const Text('Categories'),
+        title: Obx(() => _isSearching.value
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search categories...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (text) {
+                  controller.updateSearchQuery(text); 
+                },
+              )
+            : const Text('Categories')),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          IconButton(
+            icon: Obx(() => Icon(_isSearching.value ? Icons.cancel : Icons.search)),
+            onPressed: () {
+              _isSearching.value = !_isSearching.value;
+              if (!_isSearching.value) {
+                _searchController.clear();
+                controller.updateSearchQuery('');
+              }
+            },
+          ),
         ],
       ),
       body: Padding(
@@ -62,21 +85,34 @@ class CategoriesScreen extends StatelessWidget {
             ),
             Expanded(
               child: Obx(() {
+                final query = controller.searchQuery.value.toLowerCase();
+                final filteredCategories = controller.categories
+                    .where((category) =>
+                        category.name?.toLowerCase().contains(query) ?? false)
+                    .toList();
+
                 return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 12.0,
                     mainAxisSpacing: 12.0,
                   ),
-                  itemCount: controller.categories.length + 1,
+                  itemCount: filteredCategories.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return AddCategoriesCard(controller: controller);
                     }
-                    final category = controller.categories[index - 1];
-                    return GestureDetector(onTap: (){
-                      Navigator.of(context).push(MaterialPageRoute(builder: (_)=> AddTasksScreen(category: category)));
-                    },child: CategoriesCard(categories: category,));
+                    final category = filteredCategories[index - 1];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => AddTasksScreen(category: category),
+                          ),
+                        );
+                      },
+                      child: CategoriesCard(categories: category),
+                    );
                   },
                 );
               }),
