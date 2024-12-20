@@ -176,9 +176,9 @@ class AddTasksScreen extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
+            ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child:  Text("Cancel",style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black),),
             ),
             ElevatedButton(
               onPressed: () {
@@ -187,7 +187,7 @@ class AddTasksScreen extends StatelessWidget {
                   Navigator.pop(context);
                 }
               },
-              child: const Text("Add"),
+              child:  Text("Add",style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black),)
             ),
           ],
         );

@@ -53,8 +53,8 @@ class AddCategoriesCard extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        const Text('Cancel',
-                            style: TextStyle(color: Colors.black)),
+                         Text('Cancel',
+                            style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black)),
                       ],
                     ),
                   ),
@@ -71,9 +71,9 @@ class AddCategoriesCard extends StatelessWidget {
                     },
                     child: Row(
                       children: [
-                        const Text(
+                         Text(
                           'Add Task',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color:themeController.isDarkMode.value?Colors.white:Colors.black),
                         ),
                       ],
                     ),
