@@ -10,4 +10,6 @@ class ResponsiveHelper {
     double screenHeight = MediaQuery.of(context).size.height;
     return screenHeight;
   }
+
+  static getScreenHeight(BuildContext context) {}
 }
