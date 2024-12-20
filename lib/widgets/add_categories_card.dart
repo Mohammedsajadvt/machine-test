@@ -20,7 +20,7 @@ class AddCategoriesCard extends StatelessWidget {
           content: Column(
             children: [
               Padding(
-                padding:  EdgeInsets.all(ResponsiveHelper.screenHeight(context) * 0.016),
+                padding: EdgeInsets.all(ResponsiveHelper.screenHeight(context) * 0.016),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -36,12 +36,12 @@ class AddCategoriesCard extends StatelessWidget {
                     ),
                     TextField(
                       controller: taskController,
-                      decoration: const InputDecoration(labelText: '0 task'),
+                      decoration: const InputDecoration(labelText: '0 task (optional)'),
                     ),
                   ],
                 ),
               ),
-               SizedBox(height:ResponsiveHelper.screenHeight(context) * 0.016),
+              SizedBox(height: ResponsiveHelper.screenHeight(context) * 0.016),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -58,13 +58,11 @@ class AddCategoriesCard extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (nameController.text.isNotEmpty &&
-                          emojiController.text.isNotEmpty &&
-                          taskController.text.isNotEmpty) {
-                        controller.addTask(
+                      if (nameController.text.isNotEmpty && emojiController.text.isNotEmpty) {
+                        controller.addCategories(
                           nameController.text,
                           emojiController.text,
-                          taskController.text,
+                          taskController.text.isEmpty ? '0 task' : taskController.text,
                         );
                         Get.back();
                       }

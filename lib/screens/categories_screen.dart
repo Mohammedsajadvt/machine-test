@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mimo/screens/tasks_screen.dart';
 import 'package:mimo/widgets/add_categories_card.dart';
 import 'package:mimo/widgets/categories_card.dart';
 import '../controllers/todo_controller.dart';
@@ -19,9 +20,14 @@ class CategoriesScreen extends StatelessWidget {
           padding: EdgeInsets.only(
             left: ResponsiveHelper.screenHeight(context) * 0.012,
           ),
-          child: const CircleAvatar(
-            backgroundImage: NetworkImage(
-                'https://images.pexels.com/photos/27837583/pexels-photo-27837583/free-photo-of-smile.jpeg?auto=compress&cs=tinysrgb&w=600'),
+          child: GestureDetector(
+            onTap: (){
+              Navigator.of(context).pushNamed('/settings');
+            },
+            child: const CircleAvatar(
+              backgroundImage: NetworkImage(
+                  'https://images.pexels.com/photos/27837583/pexels-photo-27837583/free-photo-of-smile.jpeg?auto=compress&cs=tinysrgb&w=600'),
+            ),
           ),
         ),
         title: const Text('Categories'),
@@ -68,7 +74,9 @@ class CategoriesScreen extends StatelessWidget {
                       return AddCategoriesCard(controller: controller);
                     }
                     final category = controller.categories[index - 1];
-                    return CategoriesCard(categories: category,);
+                    return GestureDetector(onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_)=> AddTasksScreen(category: category)));
+                    },child: CategoriesCard(categories: category,));
                   },
                 );
               }),

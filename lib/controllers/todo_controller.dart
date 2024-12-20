@@ -1,19 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:mimo/models/categories_model.dart';
+import 'package:mimo/models/tasks_model.dart';
 
 class TodoController extends GetxController {
-  final categories = < CategoriesModel>[].obs;
-
+  final categories = <CategoriesModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchTasks();
+    fetchCategories();
   }
 
-  //FetchTasks
-  void fetchTasks() {
+  void fetchCategories() {
     FirebaseFirestore.instance
         .collection('categories')
         .snapshots()
@@ -24,18 +23,28 @@ class TodoController extends GetxController {
     });
   }
 
-  // AddNewTask
- void addTask(String name, String emoji, String task) {
-  FirebaseFirestore.instance.collection('categories').add({
-    'name': name,
-    'task': task,
-    'emoji': emoji,
-  }).then((_) {
-    fetchTasks();  
-  });
-  print("Categories added: $name, $emoji, $task");
-}
+  void addCategories(String name, String emoji, String task) {
+    FirebaseFirestore.instance.collection('categories').add({
+      'name': name,
+      'task': task,
+      'emoji': emoji,
+    }).then((_) {
+      fetchCategories();
+    });
+    print("Categories added: $name, $emoji, $task");
+  }
 
-
-
+  void addTask(String categoryId, String title, DateTime dueDate) {
+    FirebaseFirestore.instance
+        .collection('categories')
+        .doc(categoryId)
+        .update({
+      'tasks': FieldValue.arrayUnion([
+        TaskModel(title: title, dueDate: dueDate).toMap()
+      ]),
+    }).then((_) {
+      fetchCategories();
+    });
+    print("Task added: $title, $dueDate to category $categoryId");
+  }
 }
